@@ -24,8 +24,8 @@ module CarrierWave
           super or file.respond_to?(*args)
         end
 
-        def http?
-          @uri.scheme =~ /^https?$/
+        def proper_scheme?
+          ['http', 'https', 'ftp'].include? @uri.scheme
         end
 
       private
@@ -57,7 +57,7 @@ module CarrierWave
         unless uri.blank?
           processed_uri = process_uri(uri)
           file = RemoteFile.new(processed_uri)
-          raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
+          raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP or FTP" unless file.proper_scheme?
           cache!(file)
         end
       end
